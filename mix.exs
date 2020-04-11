@@ -16,6 +16,9 @@ defmodule CNPJ.MixProject do
         "coveralls.post": :test,
         "coveralls.html": :test
       ],
+      dialyzer: [
+        plt_file: {:no_warn, "plts/dialyzer.plt"}
+      ],
       deps: deps()
     ]
   end
@@ -45,7 +48,8 @@ defmodule CNPJ.MixProject do
     [
       {:ex_doc, only: :dev, runtime: false},
       {:credo, "~> 1.3", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:excoveralls, "~> 0.10", only: :test},
+      {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]

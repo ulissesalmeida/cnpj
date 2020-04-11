@@ -24,3 +24,7 @@ cnpj-*.tar
 
 # Ignore microsoft elixir ls
 .elixir_ls
+
+# Ignore dialyzer PLTs
+/plts/*.plt
+/plts/*.plt.hash
