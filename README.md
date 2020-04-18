@@ -31,7 +31,7 @@ be found at [https://hexdocs.pm/cnpj](https://hexdocs.pm/cnpj).
 
 ## Quick Start
 
-You can verify if a CPF is valid by calling the function `CPF.valid?/1`:
+You can verify if a CNPJ is valid by calling the function `CNPJ.valid?/1`:
 
 ```elixir
 CNPJ.valid?(13_118_061_000_108)
