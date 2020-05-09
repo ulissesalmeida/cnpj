@@ -16,8 +16,21 @@ defmodule CNPJ do
 
       iex> CNPJ.valid?(30794968000106)
       true
+
+      iex> CNPJ.valid?("87")
+      false
+
+      iex> CNPJ.valid?("30794968000106")
+      true
   """
-  @spec valid?(pos_integer) :: boolean
+  @spec valid?(pos_integer | String.t()) :: boolean
+  def valid?(number) when is_binary(number) do
+    case Integer.parse(number) do
+      {integer, ""} -> valid?(integer)
+      _ -> false
+    end
+  end
+
   def valid?(number) when is_integer(number) and number > 0 do
     digits = number |> Integer.digits()
     to_add = 14 - length(digits)
