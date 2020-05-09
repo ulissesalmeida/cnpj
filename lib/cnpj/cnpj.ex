@@ -34,6 +34,41 @@ defmodule CNPJ do
   def digits(%CNPJ{digits: digits}), do: digits
 
   @doc """
+  Formats a `cnpj` to friendly readable text.
+
+  ## Examples
+
+      iex> 70947414000108 |> CNPJ.parse!() |> CNPJ.format()
+      "70.947.414/0001-08"
+  """
+  @spec format(CNPJ.t()) :: String.t()
+  def format(%CNPJ{digits: digits}) do
+    dig_string(digits, 1) <>
+      dig_string(digits, 2) <>
+      "." <>
+      dig_string(digits, 3) <>
+      dig_string(digits, 4) <>
+      dig_string(digits, 5) <>
+      "." <>
+      dig_string(digits, 6) <>
+      dig_string(digits, 7) <>
+      dig_string(digits, 8) <>
+      "/" <>
+      dig_string(digits, 9) <>
+      dig_string(digits, 10) <>
+      dig_string(digits, 11) <>
+      dig_string(digits, 12) <>
+      "-" <>
+      dig_string(digits, 13) <>
+      dig_string(digits, 14)
+  end
+
+  defp dig_string(digits, pos) do
+    pos = pos - 1
+    digits |> elem(pos) |> to_string
+  end
+
+  @doc """
   Returns a `cnpj` when the given `number` is valid. Otherwise raises
   `CNPJ.ParsingError` error.
 

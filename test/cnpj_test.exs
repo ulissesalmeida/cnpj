@@ -167,4 +167,12 @@ defmodule CNPJTest do
       assert error.reason == :all_zero_digits
     end
   end
+
+  describe "format/1" do
+    import CNPJ, only: [format: 1]
+
+    test "returns formatted CNPJ" do
+      assert 13_118_061_000_108 |> CNPJ.parse!() |> format() == "13.118.061/0001-08"
+    end
+  end
 end
