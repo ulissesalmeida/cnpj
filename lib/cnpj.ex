@@ -22,8 +22,19 @@ defmodule CNPJ do
 
       iex> CNPJ.valid?("30794968000106")
       true
+
+      iex> CNPJ.valid?("70.947.414/0001-08")
+      true
   """
   @spec valid?(pos_integer | String.t()) :: boolean
+  def valid?(
+        <<first_digits::bytes-size(2), ".", second_digits::bytes-size(3), ".",
+          third_digits::bytes-size(3), "/", fourth_digits::bytes-size(4), "-",
+          last_digits::bytes-size(2)>>
+      ) do
+    valid?(first_digits <> second_digits <> third_digits <> fourth_digits <> last_digits)
+  end
+
   def valid?(number) when is_binary(number) do
     case Integer.parse(number) do
       {integer, ""} -> valid?(integer)

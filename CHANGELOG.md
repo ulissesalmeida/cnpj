@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `CNPJ.valid?` for string numbers
+- `CNPJ.valid?` for formatted numbers
 
 ## [0.1.0]
 

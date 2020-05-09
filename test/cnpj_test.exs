@@ -60,5 +60,13 @@ defmodule CNPJTest do
     test "returns false when with trailing characters" do
       refute valid?("31512740000130 ")
     end
+
+    test "returns true for formatted numbers" do
+      assert valid?("21.657.784/0001-03")
+    end
+
+    test "returns false for malformatted numbers" do
+      refute valid?("21.657.784/0001->03")
+    end
   end
 end
