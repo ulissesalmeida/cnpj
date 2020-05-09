@@ -69,4 +69,102 @@ defmodule CNPJTest do
       refute valid?("21.657.784/0001->03")
     end
   end
+
+  describe "parse!" do
+    import CNPJ, only: [parse!: 1]
+
+    test "returns CNPJ type for valid integers" do
+      assert %CNPJ{} = cnpj = parse!(13_118_061_000_108)
+      assert CNPJ.digits(cnpj) == {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+    end
+
+    test "returns CNPJ type for valid strings" do
+      assert %CNPJ{} = cnpj = parse!("13118061000108")
+      assert CNPJ.digits(cnpj) == {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+    end
+
+    test "returns CNPJ type for formatted valid strings" do
+      assert %CNPJ{} = cnpj = parse!("13.118.061/0001-08")
+      assert CNPJ.digits(cnpj) == {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+    end
+
+    test "raises an exception for invalid integers" do
+      error =
+        assert_raise CNPJ.ParsingError, fn ->
+          parse!(13_118_062_000_108)
+        end
+
+      assert error.reason == :invalid_verifier
+    end
+
+    test "raises an exception for too long integers" do
+      error =
+        assert_raise CNPJ.ParsingError, fn ->
+          parse!(1_232_113_118_062_000_108)
+        end
+
+      assert error.reason == :too_long
+    end
+
+    test "raises an exception for invalid strings" do
+      error =
+        assert_raise CNPJ.ParsingError, fn ->
+          parse!("13.118.061/0001.08")
+        end
+
+      assert error.reason == :invalid_format
+    end
+
+    test "raises an exception for 0 numbers" do
+      error =
+        assert_raise CNPJ.ParsingError, fn ->
+          parse!(0)
+        end
+
+      assert error.reason == :all_zero_digits
+    end
+  end
+
+  describe "parse" do
+    import CNPJ, only: [parse: 1]
+
+    test "returns ok with CNPJ type for valid integers" do
+      assert {:ok, %CNPJ{} = cnpj} = parse(13_118_061_000_108)
+      assert CNPJ.digits(cnpj) == {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+    end
+
+    test "returns ok with CNPJ type for valid strings" do
+      assert {:ok, %CNPJ{} = cnpj} = parse("13118061000108")
+      assert CNPJ.digits(cnpj) == {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+    end
+
+    test "returns ok with CNPJ type for formatted valid strings" do
+      assert {:ok, %CNPJ{} = cnpj} = parse("13.118.061/0001-08")
+      assert CNPJ.digits(cnpj) == {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+    end
+
+    test "returns error for invalid integers" do
+      {:error, error} = parse(13_118_062_000_108)
+
+      assert error.reason == :invalid_verifier
+    end
+
+    test "returns error for too long integers" do
+      {:error, error} = parse(1_232_113_118_062_000_108)
+
+      assert error.reason == :too_long
+    end
+
+    test "returns error for invalid strings" do
+      {:error, error} = parse("13.118.061/0001.08")
+
+      assert error.reason == :invalid_format
+    end
+
+    test "returns error for 0 numbers" do
+      {:error, error} = parse(0)
+
+      assert error.reason == :all_zero_digits
+    end
+  end
 end

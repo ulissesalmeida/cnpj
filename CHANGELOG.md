@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `CNPJ.parse!`
+- `CNPJ.parse`
+- `CNPJ.digits`
 - `CNPJ.valid?` for string numbers
 - `CNPJ.valid?` for formatted numbers
 
