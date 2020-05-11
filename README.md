@@ -40,3 +40,35 @@ CNPJ.valid?(13_118_061_000_108)
 CNPJ.valid?(13_118_061_000_107)
 # => false
 ```
+
+## Parsing CNPJS
+
+The `CNPJ.parse/1` and `CNPJ.parse!/1` returns you the CNPJ value wrapped in a custom type with explicit digits.
+
+```elixir
+CNPJ.parse("70947414000108")
+# => {:ok, %CNPJ{digits: {7, 0, 9, 4, 7, 4, 1, 4, 0, 0, 0, 1, 0, 8}}}
+
+CNPJ.parse("70947414000109")
+# => {:error, %CNPJ.ParsingError{reason: :invalid_verifier}}
+
+CNPJ.parse!("70947414000108")
+# => %CNPJ{digits: {7, 0, 9, 4, 7, 4, 1, 4, 0, 0, 0, 1, 0, 8}}
+
+CNPJ.parse!("70947414000109")
+# => ** (CNPJ.ParsingError) invalid_verifier
+```
+
+## CNPJ Formatting
+
+Create valid CNPJ and in sequence call `CNPJ.format/1`:
+
+```elixir
+iex> 70947414000108 |> CNPJ.parse!() |> CNPJ.format()
+"70.947.414/0001-08"
+
+iex> "70947414000108" |> CNPJ.parse!() |> CNPJ.format()
+"70.947.414/0001-08"
+```
+
+The `CNPJ.format/1` expects the CNPJ type.
