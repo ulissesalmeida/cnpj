@@ -20,7 +20,7 @@ by adding `cnpj` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:cnpj, "~> 0.1.0"}
+    {:cnpj, "~> 0.2.0"}
   ]
 end
 ```

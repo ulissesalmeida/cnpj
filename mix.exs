@@ -4,7 +4,7 @@ defmodule CNPJ.MixProject do
   def project do
     [
       app: :cnpj,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.6",
       package: package(),
       description: description(),
