@@ -174,5 +174,9 @@ defmodule CNPJTest do
     test "returns formatted CNPJ" do
       assert 13_118_061_000_108 |> CNPJ.parse!() |> format() == "13.118.061/0001-08"
     end
+
+    test "returns formatted CNPJ when it has a leading zero" do
+      assert "04679346000119" |> CNPJ.parse!() |> format() == "04.679.346/0001-19"
+    end
   end
 end
