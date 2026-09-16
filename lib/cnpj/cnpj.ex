@@ -151,7 +151,7 @@ defmodule CNPJ do
     [input_v1, input_v2] = Enum.take(safe_digits, -2)
 
     if v1 == input_v1 and v2 == input_v2 do
-      {:ok, %CNPJ{digits: List.to_tuple(digits)}}
+      {:ok, %CNPJ{digits: List.to_tuple(safe_digits)}}
     else
       {:error, %ParsingError{reason: :invalid_verifier}}
     end
