@@ -44,7 +44,7 @@ defmodule CNPJ do
     <<first::bytes-size(2), second::bytes-size(3), third::bytes-size(3), fourth::bytes-size(4),
       verifiers::bytes-size(2)>> = digits
 
-    first <> "." <> second <> "." <> third <> "/" <> fourth <> "-" <> verifiers
+    IO.iodata_to_binary([first, ".", second, ".", third, "/", fourth, "-", verifiers])
   end
 
   @doc """
