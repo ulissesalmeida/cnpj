@@ -6,9 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `CNPJ` now holds its digits internally as a string instead of a tuple of
+  integers. The struct is opaque, so `digits/1`, `format/1`, `parse/1`,
+  `parse!/1` and `valid?/1` keep their current contracts.
+
 ### Fixed
 
 - `CNPJ.format/1` raising `ArgumentError` for CNPJs with leading zeros
+- `CNPJ.parse/1`, `CNPJ.parse!/1` and `CNPJ.valid?/1` raising
+  `FunctionClauseError` for negative integers. They now return
+  `:invalid_format` and `false`.
 
 ## [0.2.0] - 2020-05-11
 
