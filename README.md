@@ -34,11 +34,14 @@ be found at [https://hexdocs.pm/cnpj](https://hexdocs.pm/cnpj).
 You can verify if a CNPJ is valid by calling the function `CNPJ.valid?/1`:
 
 ```elixir
-CNPJ.valid?(13_118_061_000_108)
+CNPJ.valid?("13118061000108")
 # => true
 
-CNPJ.valid?(13_118_061_000_107)
+CNPJ.valid?("13.118.061/0001-07")
 # => false
+
+CNPJ.valid?("12.ABC.345/01DE-35")
+# => true
 ```
 
 ## Parsing CNPJS
@@ -47,13 +50,13 @@ The `CNPJ.parse/1` and `CNPJ.parse!/1` returns you the CNPJ value wrapped in a c
 
 ```elixir
 CNPJ.parse("70947414000108")
-# => {:ok, %CNPJ{digits: {7, 0, 9, 4, 7, 4, 1, 4, 0, 0, 0, 1, 0, 8}}}
+# => {:ok, %CNPJ{digits: "70947414000108"}}
 
 CNPJ.parse("70947414000109")
 # => {:error, %CNPJ.ParsingError{reason: :invalid_verifier}}
 
 CNPJ.parse!("70947414000108")
-# => %CNPJ{digits: {7, 0, 9, 4, 7, 4, 1, 4, 0, 0, 0, 1, 0, 8}}
+# => %CNPJ{digits: "70947414000108"}
 
 CNPJ.parse!("70947414000109")
 # => ** (CNPJ.ParsingError) invalid_verifier
@@ -64,11 +67,54 @@ CNPJ.parse!("70947414000109")
 Create valid CNPJ and in sequence call `CNPJ.format/1`:
 
 ```elixir
-iex> 70947414000108 |> CNPJ.parse!() |> CNPJ.format()
-"70.947.414/0001-08"
-
 iex> "70947414000108" |> CNPJ.parse!() |> CNPJ.format()
 "70.947.414/0001-08"
+
+iex> "12ABC34501DE35" |> CNPJ.parse!() |> CNPJ.format()
+"12.ABC.345/01DE-35"
 ```
 
 The `CNPJ.format/1` expects the CNPJ type.
+
+## Alphanumeric CNPJs
+
+Since July 2026 the Receita Federal also issues alphanumeric CNPJs: the first
+twelve characters can be uppercase letters as well as digits, while the two
+check digits stay numeric. Existing numeric CNPJs remain valid, and this
+library accepts both.
+
+The check digits are computed the same way for both formats. Each character is
+worth its ASCII code minus 48, so digits keep their face value and letters go
+from `A = 17` to `Z = 42`. Only uppercase letters are accepted, as the Receita
+Federal specifies.
+
+## Migrating to the new format
+
+Integers cannot hold letters, so always pass CNPJs as strings. Integer input
+still works for numeric CNPJs, but it is deprecated.
+
+```elixir
+# before
+CNPJ.valid?(13_118_061_000_108)
+
+# after
+CNPJ.valid?("13118061000108")
+```
+
+`CNPJ.digits/1` is deprecated as well: it returns integers, so it raises
+`CNPJ.UnsupportedVersionError` for a CNPJ with letters. Use `CNPJ.digits/2`
+with the `:cnpj_2026` version, which returns strings and works with both
+formats:
+
+```elixir
+# before
+CNPJ.digits(cnpj)
+# => {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+
+# after
+CNPJ.digits(cnpj, :cnpj_2026)
+# => {"1", "3", "1", "1", "8", "0", "6", "1", "0", "0", "0", "1", "0", "8"}
+```
+
+If you still need integers for a numeric CNPJ, `CNPJ.digits(cnpj, :cnpj_pre_2026)`
+keeps the old behavior.

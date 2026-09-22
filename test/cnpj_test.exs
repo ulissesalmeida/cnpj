@@ -178,5 +178,84 @@ defmodule CNPJTest do
     test "returns formatted CNPJ when it has a leading zero" do
       assert "04679346000119" |> CNPJ.parse!() |> format() == "04.679.346/0001-19"
     end
+
+    test "returns formatted alphanumeric CNPJ" do
+      assert "12ABC34501DE35" |> CNPJ.parse!() |> format() == "12.ABC.345/01DE-35"
+    end
+  end
+
+  describe "alphanumeric CNPJs" do
+    for input <- [
+          "12ABC34501DE35",
+          "12.ABC.345/01DE-35",
+          "A1B2C3D4E5F668",
+          "ZZZZZZZZZZZZ62",
+          "0000000000A122",
+          "AB.000.000/0001-62"
+        ] do
+      @input input
+
+      test "valid? returns true for #{@input}" do
+        assert CNPJ.valid?(@input)
+      end
+    end
+
+    test "returns invalid_verifier for a wrong check digit" do
+      {:error, error} = CNPJ.parse("12ABC34501DE36")
+
+      assert error.reason == :invalid_verifier
+    end
+
+    test "returns invalid_format for lowercase letters" do
+      {:error, error} = CNPJ.parse("12abc34501de35")
+
+      assert error.reason == :invalid_format
+    end
+
+    test "returns invalid_format for letters in the check digits" do
+      {:error, error} = CNPJ.parse("12ABC34501DEAB")
+
+      assert error.reason == :invalid_format
+    end
+
+    test "returns invalid_format for symbols" do
+      {:error, error} = CNPJ.parse("12ABC345#1DE35")
+
+      assert error.reason == :invalid_format
+    end
+  end
+
+  describe "digits/2" do
+    test "returns strings for an alphanumeric CNPJ with :cnpj_2026" do
+      cnpj = CNPJ.parse!("12ABC34501DE35")
+
+      assert CNPJ.digits(cnpj, :cnpj_2026) ==
+               {"1", "2", "A", "B", "C", "3", "4", "5", "0", "1", "D", "E", "3", "5"}
+    end
+
+    test "returns strings for a numeric CNPJ with :cnpj_2026" do
+      cnpj = CNPJ.parse!("13118061000108")
+
+      assert CNPJ.digits(cnpj, :cnpj_2026) ==
+               {"1", "3", "1", "1", "8", "0", "6", "1", "0", "0", "0", "1", "0", "8"}
+    end
+
+    test "returns integers for a numeric CNPJ with :cnpj_pre_2026" do
+      cnpj = CNPJ.parse!("13118061000108")
+
+      assert CNPJ.digits(cnpj, :cnpj_pre_2026) == {1, 3, 1, 1, 8, 0, 6, 1, 0, 0, 0, 1, 0, 8}
+    end
+
+    test "raises for an alphanumeric CNPJ with :cnpj_pre_2026" do
+      cnpj = CNPJ.parse!("12ABC34501DE35")
+
+      assert_raise CNPJ.UnsupportedVersionError, fn -> CNPJ.digits(cnpj, :cnpj_pre_2026) end
+    end
+
+    test "digits/1 raises for an alphanumeric CNPJ" do
+      cnpj = CNPJ.parse!("12ABC34501DE35")
+
+      assert_raise CNPJ.UnsupportedVersionError, fn -> CNPJ.digits(cnpj) end
+    end
   end
 end
